@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "manga-party",
+  "compatibility_date": "2026-04-06",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": "manga-party"
+  },
+  "compatibility_flags": [
+    "nodejs_compat"
+  ]
+}
