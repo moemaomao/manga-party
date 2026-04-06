@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manga Party by Mikoroku</title>
+<link rel="stylesheet" href="style-feed.css">
+</head>
+<body>
+
+<div class="container">
+
+<header class="tool-header">
+
+<div class="tool-title">
+<h1>Manga Party</h1>
+<div class="tool-sub">
+by Mikoroku <span class="version">Beta</span>
+</div>
+</div>
+
+<div class="url-top">
+<button id="aboutBtn" class="about-btn">What is Manga Party?</button>
+</div>
+
+<div class="url-box">
+<input 
+type="url" 
+id="blogUrl"
+placeholder="https://blogkamu.blogspot.com"
+value=""
+>
+<button id="loadBtn">Load</button>
+</div>
+
+<div class="tool-help">
+⚠️ Hanya untuk situs <b>Blogger / Blogspot</b><br>
+📌 Gunakan URL homepage blog (bukan /search /label /post)<br>
+✅ Contoh: https://namablog.blogspot.com<br>
+❌ Salah: https://namablog.blogspot.com/search<br>
+</div>
+
+<div id="aboutModal" class="about-modal">
+<div class="about-box">
+<div class="about-title">Manga Party</div>
+<p>
+Manga Party adalah tool hosting reader manga berbasis Blogger.
+Tool ini mengambil feed dari blog manga kamu lalu mengubahnya menjadi
+library manga lengkap dengan cover, detail, dan chapter reader.
+</p>
+
+<p>
+Cocok untuk:
+<br>• Hosting manga di Blogger
+<br>• Tachiyomi source
+<br>• Backup library
+<br>• Reader statis tanpa backend
+</p>
+
+<button id="closeAbout">Close</button>
+</div>
+</div>
+
+</header>
+
+<div id="mangaPartyLib"></div>
+
+<div class="load-more-wrap">
+<button id="loadMoreBtn">Load More</button>
+</div>
+
+</div>
+
+<script>
+(function(){
+
+/* ================= ROOT ================= */
+const ROOT = document.querySelector(".container");
+
+/* ================= ABOUT ================= */
+const aboutBtn = ROOT.querySelector("#aboutBtn");
+const aboutModal = ROOT.querySelector("#aboutModal");
+const closeAbout = ROOT.querySelector("#closeAbout");
+
+aboutBtn.onclick = () => aboutModal.style.display = "flex";
+closeAbout.onclick = () => aboutModal.style.display = "none";
+aboutModal.onclick = e => {
+if(e.target === aboutModal) aboutModal.style.display = "none";
+};
+
+/* ================= DARK MODE ================= */
+if (localStorage.getItem("darkMode") === "true") {
+document.body.classList.add("dark");
+}
+
+/* ================= STATE ================= */
+let savedState = sessionStorage.getItem("feedState");
+let feedState = savedState ? JSON.parse(savedState) : null;
+
+let mangaData = feedState?.mangaData || {};
+let startIndex = feedState?.startIndex || 1;
+const maxResults = 30;
+
+const loadMoreBtn = ROOT.querySelector("#loadMoreBtn");
+loadMoreBtn.style.display = feedState?.loadMore ? "block" : "none";
+
+/* RESTORE HTML */
+if(feedState){
+ROOT.querySelector("#mangaPartyLib").innerHTML = feedState.html || "";
+setTimeout(()=>window.scrollTo(0, feedState.scroll || 0),50);
+}
+
+/* ================= UTIL ================= */
+function normalize(str){
+return str.toLowerCase().replace(/[^a-z0-9]/g,"");
+}
+
+function fixUrl(url){
+url = url.trim();
+if(!url) return "";
+if(!/^https?:\/\//i.test(url)) url="https://"+url;
+return url.replace(/\/+$/,"");
+}
+
+/* ================= SKELETON ================= */
+function showSkeleton(){
+const el = ROOT.querySelector("#mangaPartyLib");
+let html="";
+for(let i=0;i<12;i++){
+html+=`
+<div class="card skeleton-card">
+<div class="thumb skeleton-thumb"></div>
+</div>`;
+}
+el.innerHTML=html;
+}
+
+/* ================= LOAD ================= */
+function loadManga(blogUrl, append=false){
+
+const el = ROOT.querySelector("#mangaPartyLib");
+
+if(!append){
+showSkeleton();
+loadMoreBtn.style.display="none";
+}
+
+let feedUrl=blogUrl.trim();
+if(!feedUrl.endsWith("/")) feedUrl+="/";
+
+feedUrl+=`feeds/posts/default?alt=json-in-script&start-index=${startIndex}&max-results=${maxResults}&callback=mangaPartyCallback`;
+
+const script=document.createElement("script");
+script.src=feedUrl;
+
+script.onerror = () => {
+el.innerHTML = `<div class="empty">Gagal mengambil feed</div>`;
+loadMoreBtn.style.display="none";
+};
+
+document.body.appendChild(script);
+script.onload=()=>script.remove();
+}
+
+/* ================= CALLBACK ================= */
+window.mangaPartyCallback=function(data){
+
+const el = ROOT.querySelector("#mangaPartyLib");
+
+if(!data?.feed?.entry){
+loadMoreBtn.style.display="none";
+return;
+}
+
+if(startIndex===1 && !feedState) el.innerHTML="";
+
+let added=0;
+
+data.feed.entry.forEach(p=>{
+
+if(!p.category || !p.category.some(c =>
+["Manga","Manhua","Manhwa"].includes(c.term)
+)) return;
+
+added++;
+
+const title=p.title.$t;
+const key=normalize(title);
+
+const img=p.media$thumbnail
+? p.media$thumbnail.url.replace("s72-c","s500")
+: "https://via.placeholder.com/300x400/1a1a1a/666?text=No+Image";
+
+let status = "ONGOING";
+let genres = [];
+
+const GENRE_LIST = [
+  "Shounen", "Seinen", "Shoujo", "Josei",
+  "Action", "Adventure", "Comedy", "Drama", "Fantasy",
+  "Romance", "Isekai", "Harem", "Ecchi", "School Life",
+  "Martial Arts", "Murim", "Cultivation", "Overpowered MC"
+];
+
+p.category.forEach(c => {
+  const label = (c.term || "").trim();
+  
+  if (["Ongoing", "Completed", "Hiatus", "Dropped"].includes(label)) {
+    status = label;
+    return;
+  }
+  
+  if (GENRE_LIST.includes(label)) {
+    genres.push(label);
+  }
+});
+
+genres = [...new Set(genres)];
+
+const parser = document.createElement("div");
+parser.innerHTML = p.content?.$t || "";
+
+let desc = "";
+const syn = parser.querySelector("#synopsis");
+if (syn) desc = syn.textContent.trim();
+else desc = parser.textContent.trim().substring(0, 300);
+
+function getInfo(label) {
+  const regex = new RegExp(label + "\\s*:?\\s*(.*)", "i");
+  const match = parser.textContent.match(regex);
+  return match ? match[1].split("\n")[0].trim() : "-";
+}
+
+const author = parser.querySelector("#author")?.textContent.trim() || getInfo("Author");
+const artist = parser.querySelector("#artist")?.textContent.trim() || getInfo("Artist");
+const serialization = parser.querySelector("#serialization")?.textContent.trim() || getInfo("Serialization");
+const publication = parser.querySelector("#publication")?.textContent.trim() || getInfo("Publication");
+const chapter = parser.querySelector("#chapter")?.textContent.trim() || getInfo("Chapter");
+
+mangaData[key] = {
+  title,
+  img,
+  desc,
+  status,
+  genres,
+  author,
+  artist,
+  serialization,
+  publication,
+  chapter
+};
+
+el.insertAdjacentHTML("beforeend",`
+<div class="card" data-key="${key}">
+<div class="thumb">
+<img src="${img}" loading="lazy">
+<div class="overlay">
+<div class="title">${title}</div>
+</div>
+</div>
+</div>
+`);
+
+});
+
+startIndex+=maxResults;
+loadMoreBtn.style.display = added>0 ? "block":"none";
+
+/* SAVE STATE */
+sessionStorage.setItem("feedState", JSON.stringify({
+html: ROOT.querySelector("#mangaPartyLib").innerHTML,
+mangaData,
+startIndex,
+loadMore: loadMoreBtn.style.display === "block",
+scroll: window.scrollY
+}));
+
+};
+
+/* ================= CLICK ================= */
+ROOT.addEventListener("click",e=>{
+const card=e.target.closest(".card");
+if(!card) return;
+
+const key=card.dataset.key;
+const manga=mangaData[key];
+if(!manga) return;
+
+sessionStorage.setItem("feedState", JSON.stringify({
+html: ROOT.querySelector("#mangaPartyLib").innerHTML,
+mangaData,
+startIndex,
+loadMore: loadMoreBtn.style.display === "block",
+scroll: window.scrollY
+}));
+
+localStorage.setItem("currentManga",JSON.stringify(manga));
+
+const slug=manga.title
+.toLowerCase()
+.replace(/[^a-z0-9\s-]/g,"")
+.replace(/\s+/g,"-");
+
+const path = window.location.pathname.includes("manga-party") ?
+  "manga-feed.html" :
+  "manga-party/manga-feed.html";
+
+window.location.href = `${path}?slug=${slug}`;
+});
+
+/* ================= LOAD BTN ================= */
+ROOT.querySelector("#loadBtn").addEventListener("click",()=>{
+let url=ROOT.querySelector("#blogUrl").value;
+url=fixUrl(url);
+
+if(!url){
+alert("Masukkan URL Blogger");
+return;
+}
+
+startIndex=1;
+mangaData={};
+sessionStorage.removeItem("feedState");
+
+loadMoreBtn.style.display="none";
+
+loadManga(url);
+});
+
+/* ================= LOAD MORE ================= */
+loadMoreBtn.addEventListener("click",()=>{
+let url=ROOT.querySelector("#blogUrl").value;
+url=fixUrl(url);
+if(!url) return;
+loadManga(url,true);
+});
+
+})();
+</script>
+
+</body>
+</html>
