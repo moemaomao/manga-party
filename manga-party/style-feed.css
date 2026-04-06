@@ -1,4 +1,4 @@
-/* ==================== GLOBAL ==================== */
+/* ==================== GLOBAL & DARK MODE ==================== */
 * { 
   box-sizing: border-box; 
 }
@@ -11,9 +11,10 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Kodchasan', arial, sans-serif;
+  font-family: 'Kodchasan', 'kodchasan', arial, sans-serif;
   line-height: 1.4;
   overflow-x: hidden;
+  transition: background 0.4s ease, color 0.4s ease;
 }
 
 /* ==================== MAIN CONTENT ==================== */
@@ -79,7 +80,11 @@ body {
   text-shadow: 0 1px 3px rgba(0,0,0,0.7);
 }
 
+
+
+
 /* ================= TOOL HEADER ================= */
+
 .tool-header {
   display: flex;
   flex-direction: column;
@@ -116,12 +121,14 @@ body {
 .url-box {
   display: flex;
   gap: 8px;
-  background: #f5f5f5;
+  background: var(--card-bg, #f5f5f5);
   padding: 5px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
-  max-width: 320px;
-  margin: 0 auto;
+
+  /* TAMBAHAN */
+  max-width: 320px;   /* ukuran kecil */
+  margin: 0 auto;     /* rata tengah */
   width: 100%;
 }
 
@@ -132,7 +139,7 @@ body {
   background: transparent;
   padding: 10px;
   font-size: 14px;
-  min-width: 0;
+  min-width: 0; /* biar tidak overflow */
 }
 
 .url-box button {
@@ -144,6 +151,24 @@ body {
   background: linear-gradient(135deg, #4facfe, #00f2fe);
   color: #fff;
   white-space: nowrap;
+}
+/* DARK BUTTON */
+.dark-btn {
+  align-self: center;
+  border: none;
+  background: var(--card-bg, #f5f5f5);
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* DARK MODE SUPPORT */
+.dark .url-box {
+  background: #1e1e1e;
+}
+
+.dark .dark-btn {
+  background: #1e1e1e;
 }
 
 /* LOAD MORE */
@@ -168,6 +193,10 @@ body {
   transform: translateY(-1px);
 }
 
+.dark #loadMoreBtn {
+  box-shadow: none;
+}
+
 /* TOOL HELP */
 .tool-help {
   font-size: 12px;
@@ -176,15 +205,75 @@ body {
   border-radius: 10px;
   background: rgba(0, 0, 0, .03);
   opacity: .8;
+  
+  /* CENTER BOX ONLY */
   max-width: 420px;
   margin: 0 auto;
+  
+  /* TEXT LEFT */
   text-align: left;
+  
   border: 1px solid rgba(0, 0, 0, .08);
 }
 
-/* ABOUT */
+.dark .tool-help {
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid rgba(255, 255, 255, .08);
+}
+
+/* ================= DARK MODE FIX - MANGA PARTY ================= */
+
+.dark .tool-title h1,
+.dark .tool-sub,
+.dark .tool-help,
+.dark .about-btn,
+.dark .url-box input {
+  color: #fff;
+}
+
+.dark .tool-help {
+  color: #ddd;
+}
+
+.dark .url-box input::placeholder {
+  color: #aaa;
+}
+
+/* ABOUT BUTTON */
+.url-top {
+  display: flex;
+  justify-content: center; /* samakan posisi dengan url-box */
+  max-width: 420px;        /* samakan lebar url-box */
+  margin: 0 auto 6px auto; /* center container */
+}
+
+/* TEXT tetap kiri */
+.about-btn {
+  background: none;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: .7;
+  text-decoration: underline;
+
+  width: 100%;
+  text-align: left; /* kiri */
+  padding: 0;
+}
+
+/* MODAL */
+.about-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
 .about-box {
-  background: #ffffff;
+  background: #a1a1a1;
   padding: 20px;
   border-radius: 14px;
   max-width: 320px;
@@ -192,23 +281,47 @@ body {
   line-height: 1.6;
 }
 
-/* ================= RESPONSIVE ================= */
+.about-title {
+  font-weight: 700;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.about-box button {
+  margin-top: 12px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.dark .about-box {
+  background: #1e1e1e;
+}
+
+
+/* ==================== RESPONSIVE MANGA PARTY FIX ==================== */
+
+/* mobile default tetap 3 */
 #mangaPartyLib {
   grid-template-columns: repeat(3, 1fr);
 }
 
+/* tablet */
 @media (min-width: 768px) {
   #mangaPartyLib {
     grid-template-columns: repeat(4, 1fr) !important;
   }
 }
 
+/* desktop */
 @media (min-width: 1024px) {
   #mangaPartyLib {
     grid-template-columns: repeat(5, 1fr) !important;
   }
 }
 
+/* widescreen */
 @media (min-width: 1280px) {
   #mangaPartyLib {
     grid-template-columns: repeat(6, 1fr) !important;
