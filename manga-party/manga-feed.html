@@ -1,0 +1,1044 @@
+<!DOCTYPE html>  <html lang="id">  
+<head>  
+  <meta charset="UTF-8">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">    <!-- Basic Meta -->    <title id="pageTitle">Mikoroku - Detail</title>  
+  <meta name="description" id="metaDescription" content="Baca manga terbaru di Mikoroku">    <!-- Open Graph / Social Media Preview -->    <meta property="og:type" content="article">  
+  <meta property="og:site_name" content="Mikoroku">  
+  <meta property="og:title" content="Mikoroku">  
+  <meta property="og:description" content="Baca manga terbaru di Mikoroku">  
+  <meta property="og:image" content="https://mikoroku.com/og-default.jpg">  
+  <meta property="og:url" content="https://mikoroku.com">    <!-- Twitter Card -->    <meta name="twitter:card" content="summary_large_image">  
+  <meta name="twitter:title" id="twitterTitle" content="Mikoroku">  
+  <meta name="twitter:description" id="twitterDescription" content="Baca manga terbaru di Mikoroku">  
+  <meta name="twitter:image" id="twitterImage" content="https://via.placeholder.com/300x450">    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">  
+  <link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@400;500;600;700&display=swap" rel="stylesheet">  
+  <link rel="stylesheet" href="style.css">  </head>   
+<style>    
+    body {     
+      background: #0b0b0b;     
+      color: #fff;     
+      margin: 0;    
+      font-family: 'Kodchasan', sans-serif;    
+    }    .container {    
+  width: 100%;    
+  max-width: 480px;    
+  margin: 0 auto;    
+  background: #0f0f1e;  
+  color: ghostwhite;  
+  border-radius: 16px;    
+  overflow: hidden;    
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);    
+  position: relative;    
+  min-height: 100vh;    
+  transition: max-width 0.4s ease;    
+}    
+
+#bgLayer {    
+  position: absolute;    
+  inset: 0;    
+  background: url('#') center/cover no-repeat;    
+  filter: blur(14px) brightness(1.1);    
+  opacity: 1;    
+  z-index: 1;    
+  transition: background-image 0.5s ease;    
+}    
+
+.container::after {    
+  content: '';    
+  position: absolute;    
+  inset: 0;    
+  background: rgba(15, 15, 30, 0.45);    
+  z-index: 2;    
+}    
+
+.content {     
+  position: relative;     
+  z-index: 3;     
+}    
+
+.main {    
+  padding: 18px 14px 14px;    
+  display: flex;    
+  gap: 14px;    
+  align-items: flex-start;    
+}    
+    
+.left-column {    
+  display: flex;    
+  flex-direction: column;    
+  align-items: center;    
+  gap: 12px;    
+  flex-shrink: 0;    
+  width: 120px;    
+}    
+
+.cover {    
+  width: 110px;    
+  height: 150px;    
+  border-radius: 12px;    
+  overflow: hidden;    
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75);    
+}    
+
+.cover img {     
+  width: 100%;     
+  height: 100%;     
+  object-fit: cover;     
+}
+
+.rating {
+width: 140px;
+text-align: center;
+margin-top: 4px;
+}
+
+.stars {
+color: #ffd54a;
+font-size: 14px;
+letter-spacing: 1px;
+}
+
+.rating-number {
+font-size: 12px;
+color: #ddd;
+margin-top: 2px;
+}
+
+.bookmark-btn {    
+  background: rgba(255,255,255,0.12);    
+  border: 2px solid rgba(255,255,255,0.35);    
+  color: white;    
+  padding: 4px 10px;    
+  border-radius: 10px;    
+  font-weight: 600;    
+  cursor: pointer;    
+  display: inline-flex;    
+  align-items: center;    
+  gap: 6px;    
+  width: 110px;    
+  justify-content: center;    
+  transition: all 0.3s;  
+  font-size: 11px;  
+}    
+
+.bookmark-btn:hover {    
+  background: rgba(255,255,255,0.22);    
+  border-color: rgba(255,255,255,0.55);    
+}    
+
+.bookmark-btn.bookmarked {    
+  background: #ffcc00;    
+  color: #000;    
+  border-color: #ffcc00;    
+}    
+  
+@media (min-width: 768px) {
+
+.bookmark-btn {
+width: 140px;
+padding: 10px 24px;
+font-size: 14px;
+}
+}
+
+.info h1 {    
+  font-size: 17px;    
+  font-weight: 700;    
+  line-height: 1.25;    
+  margin-bottom: 12px;    
+  text-align: left;    
+  word-break: break-word;    
+  overflow-wrap: break-word;    
+  max-width: 100%;    
+}    
+
+.status {     
+  display: flex;     
+  align-items: center;     
+  gap: 8px;     
+  color: violet;     
+  font-weight: 600;     
+  margin-bottom: 15px;     
+}    
+  
+.status span {
+
+font-weight: 700;
+}
+
+.status.ongoing span {
+color: #22c55e; /* hijau */
+}
+
+.status.completed span {
+color: skyblue;
+}
+
+.status.hiatus span {
+color: lightyellow;/
+}
+
+.status.dropped span {
+color: orangered;
+}
+
+.status.canceled span {
+color: darkorange;
+}
+
+.status.unknown span {
+color: #9ca3af; /* abu */
+}
+
+.detail-item {     
+  display: flex;     
+  align-items: center;     
+  gap: 10px;     
+  margin-bottom: 5px;     
+  font-size: 11px;     
+}    
+
+.detail-item i {     
+  width: 20px;     
+  color: #ddd;     
+  text-align: center;     
+}
+
+#latestUpdateItem {
+color: #4ade80;
+margin-bottom: 12px !important;   /* beri jarak lebih */
+}
+
+.genres {     
+  display: flex;     
+  flex-wrap: wrap;     
+  gap: 8px;     
+  margin-top: 15px;     
+}    
+
+.genre {     
+  background: rgba(0,0,0,0.5);     
+  padding: 4px 10px;     
+  border-radius: 20px;     
+  font-size: 11px;     
+}    
+
+.synopsis {    
+  padding: 25px 20px;    
+  background: rgba(26, 26, 46, 0.35);    
+  margin: 0 20px 20px;    
+  border-radius: 14px;    
+  border: 1px solid rgba(0, 0, 0, 0.6);    
+  backdrop-filter: blur(8px);    
+  font-size: 14px;  
+}    
+
+.synopsis h2 {     
+  font-size: 18px;     
+  margin-bottom: 14px;     
+}    
+    
+.section-title {
+
+font-size: 20px;
+margin: 25px 0 15px 0;
+padding-left: 25px;
+}
+
+/* ==================== CHAPTER GRID - THUMBNAIL 1:1 ==================== */    
+.chapter-grid {    
+  display: grid;    
+  grid-template-columns: repeat(4, 1fr);   /* Mobile: 4 kolom */    
+  gap: 12px;    
+  padding: 0 20px 30px;    
+}    
+
+.chapter-item {    
+  border-radius: 10px;    
+  overflow: hidden;    
+  background: #222;    
+  position: relative;    
+  aspect-ratio: 1 / 1;        /* Thumbnail 1:1 (kotak) */    
+}    
+  
+/* ===== CHAPTER READ MARK ===== */
+
+.chapter-item.read img {
+filter: brightness(0.35);
+}
+
+.chapter-item.read::before {
+content: "";
+position: absolute;
+inset: 0;
+background: rgba(0, 0, 0, 0.45);
+}
+
+.chapter-item.read::after {
+content: "✓";
+position: absolute;
+top: 6px;
+right: 6px;
+background: #22c55e;
+color: white;
+width: 20px;
+height: 20px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 12px;
+font-weight: bold;
+}
+
+.chapter-item.read img {
+filter: brightness(0.4);
+}
+
+.chapter-item img {    
+  width: 100%;    
+  height: 100%;    
+  object-fit: cover;          /* Gambar tetap terisi penuh tanpa distorsi */    
+  display: block;    
+}    
+
+.chapter-label {    
+  position: absolute;    
+  bottom: 0;    
+  left: 0;    
+  right: 0;    
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));    
+  padding: 6px 4px 4px;    
+  text-align: center;    
+  font-size: 10px;    
+  font-weight: 600;    
+  color: white;    
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);    
+}    
+
+/* ==================== RESPONSIVE ==================== */    
+
+/* Tablet */    
+@media (min-width: 768px) {    
+  .container {    
+    max-width: 720px;    
+    border-radius: 20px;    
+    margin: 20px auto;    
+  }    
+      
+  .main {    
+    padding: 35px 30px 25px;    
+    gap: 30px;    
+  }    
+      
+  .left-column {    
+    width: 200px;    
+  }    
+      
+  .cover {    
+    width: 200px;    
+    height: 280px;    
+  }    
+      
+  .info h1 {    
+    font-size: 26px;    
+  }    
+      
+  .chapter-grid {    
+    grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));  /* \~5-6 kolom */    
+    gap: 16px;    
+    padding: 0 30px 40px;    
+  }    
+      
+  .synopsis {    
+    margin: 0 30px 30px;    
+  }    
+}    
+
+/* Desktop */    
+@media (min-width: 1024px) {    
+  .container {    
+    max-width: 1150px;    
+    border-radius: 24px;    
+    margin: 30px auto;    
+  }    
+      
+  .main {    
+    padding: 40px 40px 30px;    
+    gap: 40px;    
+  }    
+      
+  .left-column {    
+    width: 240px;    
+  }    
+      
+  .cover {    
+    width: 240px;    
+    height: 340px;    
+  }    
+      
+  .info h1 {    
+    font-size: 28px;    
+  }    
+      
+  /* Desktop: target 8-10 kolom */    
+  .chapter-grid {    
+    grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));    
+    gap: 18px;    
+    padding: 0 40px 50px;    
+  }    
+      
+  .synopsis {    
+    margin: 0 40px 40px;    
+  }    
+}    
+
+/* Extra Large Desktop */    
+@media (min-width: 1400px) {    
+  .container {    
+    max-width: 1300px;    
+  }    
+      
+  .chapter-grid {    
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));    
+    gap: 20px;    
+  }    
+}    
+
+/* Global fix */    
+img {    
+  max-width: 100%;    
+  height: auto;    
+  display: block;    
+}
+
+  </style>    
+</head>    
+<body>      
+
+    <div id="site-header"></div>  
+   <script src="/js/header.js" defer></script>  
+   <script src="/js/manga-data.js" defer></script>    <div class="container">    
+    <!-- Background blur layer -->    
+    <div id="bgLayer"></div>    <div class="content">    
+
+  <!-- Main Section -->    
+  <div class="main">    
+    <div class="left-column">    
+      <div class="cover">    
+        <img id="detailCover" src="https://via.placeholder.com/160x220/1a1a1a/555?text=Cover" alt="Cover">    
+      </div>   
+      <div class="rating" id="ratingBox">
+
+  <div class="stars" id="ratingStars"></div>  
+  <div class="rating-number" id="ratingNumber">-</div>  
+</div>  
+          <button class="bookmark-btn" id="bookmarkBtn">    
+            <i class="fas fa-bookmark"></i>    
+            <span id="bookmarkText">Bookmark</span>    
+          </button>    
+        </div>    <div class="info">    
+      <h1 id="detailTitle" class="title">Loading...</h1>    
+          
+      <div class="status">    
+        <i class="fas fa-fire"></i>    
+        <span id="detailStatus">ONGOING</span>    
+      </div>    
+
+      <div class="detail-item">    
+        <i class="fas fa-book"></i>    
+        <span><strong>Chapter:</strong> <span id="detailChapter">1 - ?</span></span>    
+      </div>    
+      <div class="detail-item">    
+        <i class="fas fa-calendar-alt"></i>    
+        <span><strong>Publication:</strong> <span id="detailPublication">2019</span></span>    
+      </div>    
+      <div class="detail-item">    
+        <i class="fas fa-newspaper"></i>    
+        <span><strong>Serialization:</strong> <span id="detailSerialization">Manga up</span></span>    
+      </div>    
+      <div class="detail-item">    
+        <i class="fas fa-user"></i>    
+        <span><strong>Author:</strong> <span id="detailAuthor">Shiraishi Arata</span></span>    
+      </div>    
+      <div class="detail-item">    
+        <i class="fas fa-palette"></i>    
+        <span><strong>Artist:</strong> <span id="detailArtist">Tsuna Ayatsuki</span></span>    
+      </div>    
+      <div class="detail-item" id="latestUpdateItem">
+
+<i class="fas fa-clock"></i>
+<span><strong>Latest Update:</strong> <span id="detailLatestUpdate">-</span></span>
+
+</div>    <div class="genres" id="detailGenres"></div>    
+    </div>    
+  </div>    
+
+  <!-- Synopsis -->    
+  <div class="synopsis">    
+    <h2>Synopsis</h2>    
+    <p id="detailDesc">Loading synopsis...</p>    
+  </div>
+
+  <div id="announcement-widget"></div>  
+<script src="/announcement.js"></script>  
+      <!-- Chapters -->    
+     <div class="chapters">    
+     <h2 class="section-title">Chapters</h2>    
+     <div class="chapter-grid" id="chapterList">    
+    <!-- Chapters akan diisi oleh JS -->    
+  </div>    
+</div>    </div>
+
+  </div>      <script>    
+  let currentTitle = "";    
+      
+  /* =========================    
+     CACHE KEY    
+  ========================= */    
+  function getCacheKey(title) {    
+    return "detail_" + title.toLowerCase().replace(/[^a-z0-9]/g, "");    
+  }    
+      
+  function getChapterCacheKey(title) {    
+    return "chapters_" + title.toLowerCase().replace(/[^a-z0-9]/g, "");    
+  }    
+    
+    function normalize(str) {
+  return str.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+  /* =========================  
+       UPDATE META TAGS (PENTING!)  
+    ========================= */  
+    function updateMetaTags(manga) {  
+      const title = manga.title + " - Mikoroku";  
+      const desc = (manga.desc || "Baca " + manga.title + " terbaru dengan chapter lengkap di Mikoroku").substring(0, 200);  
+      const image = manga.img || manga.cover || "https://via.placeholder.com/300x450";  
+      const url = window.location.href;  
+  
+      // Update <title>  
+      document.getElementById('pageTitle').textContent = title;  
+  
+      document.querySelector('meta[property="og:image"]')  
+       ?.setAttribute("content", manga.img);  
+  
+     document.querySelector('meta[name="twitter:image"]')  
+         ?.setAttribute("content", manga.img);  
+        
+      // Update Open Graph  
+      document.getElementById('ogTitle').setAttribute('content', title);  
+      document.getElementById('ogDescription').setAttribute('content', desc);  
+      document.getElementById('ogImage').setAttribute('content', image);  
+      document.getElementById('ogUrl').setAttribute('content', url);  
+  
+      // Update Twitter  
+      document.getElementById('twitterTitle').setAttribute('content', title);  
+      document.getElementById('twitterDescription').setAttribute('content', desc);  
+      document.getElementById('twitterImage').setAttribute('content', image);  
+  
+      // Update basic meta description  
+      document.getElementById('metaDescription').setAttribute('content', desc);  
+    }  
+  
+    /* =========================  
+       RENDER DETAIL (dengan update meta)  
+    ========================= */  
+    function renderDetail(manga) {  
+      currentTitle = manga.title;  
+      currentManga = manga;  
+  
+  
+// ===== RATING FROM LABEL BLOGGER =====  
+let ratingValue = null;  
+let cleanGenres = [];  
+  
+if (manga.genres && Array.isArray(manga.genres)) {  
+  manga.genres.forEach(g => {  
+    let label = g.trim().replace(",", "");  
+      
+    if (/^\d+(\.\d+)?$/.test(label)) {  
+      ratingValue = parseFloat(label); // ambil rating  
+    } else {  
+      cleanGenres.push(g); // simpan genre normal  
+    }  
+  });  
+}  
+  
+// update genre tanpa rating  
+manga.genres = cleanGenres;  
+  
+const ratingStars = document.getElementById("ratingStars");  
+const ratingNumber = document.getElementById("ratingNumber");  
+  
+if (ratingValue !== null) {  
+  ratingNumber.textContent = ratingValue.toFixed(1);  
+    
+  let starsHTML = "";  
+  let starScore = ratingValue / 2;  
+    
+  for (let i = 1; i <= 5; i++) {  
+    if (starScore >= i) {  
+      starsHTML += '<i class="fas fa-star"></i>';  
+    } else if (starScore >= i - 0.5) {  
+      starsHTML += '<i class="fas fa-star-half-alt"></i>';  
+    } else {  
+      starsHTML += '<i class="far fa-star"></i>';  
+    }  
+  }  
+    
+  ratingStars.innerHTML = starsHTML;  
+} else {  
+  ratingStars.innerHTML = '<i class="far fa-star"></i>'.repeat(5);  
+  ratingNumber.textContent = "-";  
+}  
+      
+  document.getElementById('pageTitle').textContent = manga.title + " - Mikoroku";    
+  document.getElementById('detailTitle').textContent = manga.title;    
+      
+  const coverImg = document.getElementById('detailCover');    
+  coverImg.src = manga.img || manga.cover || '';    
+      
+  const bgLayer = document.getElementById('bgLayer');    
+  bgLayer.style.backgroundImage = `url('${coverImg.src}')`;    
+      
+  document.getElementById('detailDesc').textContent = manga.desc || 'Synopsis tidak tersedia.';    
+      
+  // Data dari manga.info    
+  document.getElementById('detailChapter').textContent =
+  manga.chapter || manga.info?.chapter || '1 - ?';
+
+document.getElementById('detailPublication').textContent =
+  manga.publication || manga.info?.publication || '-';
+
+document.getElementById('detailSerialization').textContent =
+  manga.serialization || manga.info?.serialization || '-';
+
+document.getElementById('detailAuthor').textContent =
+  manga.author || manga.info?.author || '-';
+
+document.getElementById('detailArtist').textContent =
+  manga.artist || manga.info?.artist || '-';    
+      
+  // Latest Update - Ditempatkan di luar if(manga.info)    
+  const latestEl = document.getElementById('detailLatestUpdate');  
+if (latestEl) {  
+  latestEl.textContent = "Loading...";  
+}   
+      
+  const statusText = (manga.status || "UNKNOWN").toUpperCase();  
+const statusEl = document.getElementById('detailStatus');  
+const statusBox = statusEl.parentElement;  
+  
+statusEl.textContent = statusText;  
+  
+// reset class dulu  
+statusBox.classList.remove(  
+  "ongoing",  
+  "completed",  
+  "hiatus",  
+  "dropped",  
+  "canceled",  
+  "unknown"  
+);  
+  
+// set class berdasarkan status  
+statusBox.classList.add(statusText.toLowerCase());    
+      
+  const genreContainer = document.getElementById('detailGenres');    
+  genreContainer.innerHTML = manga.genres ?    
+    manga.genres.map(g => `<div class="genre">${g}</div>`).join('') :    
+    '';    
+    
+  loadChapters(manga.title);    
+  checkBookmarkStatus();    
+}    
+  
+      
+  /* =========================    
+     LOAD DETAIL    
+  ========================= */    
+  function loadDetail() {  
+  const params = new URLSearchParams(window.location.search);  
+  const slug = params.get("slug");  
+    
+  const saved = localStorage.getItem("currentManga");  
+    
+  // ✅ kalau ada di localStorage → pakai  
+  if (saved) {  
+    const manga = JSON.parse(saved);  
+    renderDetail(manga);  
+    return;  
+  }  
+    
+  // ❌ kalau tidak ada → ambil dari slug  
+  if (!slug) return;  
+    
+  document.getElementById("detailTitle").textContent = "Loading...";  
+    
+  const script = document.createElement("script");  
+  const base = getFeedBase();
+script.src = `${base}feeds/posts/default?alt=json-in-script&max-results=200&callback=detailSlugCallback`;  
+  document.body.appendChild(script);  
+    
+  window.detailSlugCallback = function(data) {  
+    if (!data.feed || !data.feed.entry) return;  
+      
+    const entry = data.feed.entry.find(p => {  
+  const title = p.title.$t.toLowerCase()  
+    .replace(/[^a-z0-9\s-]/g, "")  
+    .replace(/\s+/g, "-");  
+    
+  return title === slug || slug.includes(title) || title.includes(slug);  
+});  
+      
+    if (!entry) {  
+  document.querySelector(".container").innerHTML = `  
+    <div style="  
+      text-align:center;  
+      padding:80px 20px;  
+      color:#aaa;  
+      font-size:18px;  
+    ">  
+      📭 Judul tidak ditemukan  
+    </div>  
+  `;  
+  return;  
+}  
+      
+    const parser = document.createElement("div");  
+    parser.innerHTML = entry.content?.$t || "";  
+      
+    const desc = parser.innerText.trim().substring(0, 500);  
+      
+    const manga = {  
+      title: entry.title.$t,  
+      img: entry.media$thumbnail?.url.replace("s72-c", "s500") || "",  
+      desc: desc,  
+      genres: entry.category?.map(c => c.term) || [],  
+      status: "",  
+      info: {}  
+    };  
+      
+    localStorage.setItem("currentManga", JSON.stringify(manga));  
+    renderDetail(manga);  
+  };  
+}  
+      
+      
+  /* =========================    
+     JSONP CALLBACK    
+  ========================= */  
+  window.chapterCallback = function(data) {
+  
+  const list = document.getElementById("chapterList");
+  
+  if (!data.feed || !data.feed.entry) {
+    list.innerHTML = "<p style='color:#aaa;text-align:center;'>No chapters found</p>";
+    return;
+  }
+  
+  let html = "";
+  let latestDate = null;
+  
+  data.feed.entry.forEach(entry => {
+    
+    const rawTitle = entry.title.$t;
+    
+    /* ================= MATCH TITLE ================= */
+    const titleMatch =
+      normalize(rawTitle).includes(normalize(currentTitle));
+    
+    /* ================= MATCH LABEL ================= */
+    let labelMatch = false;
+    
+    if (entry.category) {
+      labelMatch = entry.category.some(cat =>
+        normalize(cat.term) === normalize(currentTitle)
+      );
+    }
+    
+    /* ================= FILTER ================= */
+    if (!titleMatch && !labelMatch) return;
+    
+    
+    /* ================= LINK ================= */
+    const link = entry.link.find(l => l.rel === "alternate").href;
+    
+    
+    /* ================= DATE ================= */
+    let dateStr = entry.updated?.$t || entry.published?.$t;
+    
+    if (!dateStr && data.feed.updated?.$t) {
+      dateStr = data.feed.updated.$t;
+    }
+    
+    if (dateStr) {
+      const dateObj = new Date(dateStr);
+      if (!latestDate || dateObj > latestDate) {
+        latestDate = dateObj;
+      }
+    }
+    
+    
+    /* ================= CHAPTER NUMBER ================= */
+    let chapterNum = rawTitle.match(/(\d+(\.\d+)?)/)?.[0] || "?";
+    let chapterLabel = `Chapter ${chapterNum}`;
+    
+    
+    /* ================= IMAGE ================= */
+    let img = "https://via.placeholder.com/300x200/111/fff?text=Chapter";
+    
+    let images = [];
+    if (entry.content?.$t) {
+      const matches = [...entry.content.$t.matchAll(/<img.*?src=["'](.*?)["']/g)];
+      images = matches.map(m => m[1]);
+    }
+    
+    if (images.length >= 3) {
+      img = images[2];
+    } else if (images.length > 0) {
+      img = images[0];
+    }
+    
+    img = img.replace(/\/s\d+/, "/s100");
+    
+    
+    /* ================= RENDER ================= */
+    html += `
+<div class="chapter-item" onclick="openChapter('${link}', '${chapterLabel}')">
+<img src="${img}" loading="lazy">
+<div class="chapter-label">${chapterLabel}</div>
+</div>
+`;
+    
+  });
+  
+  
+  if (!html) {
+    list.innerHTML = "<p style='color:#aaa;text-align:center;'>No chapters found</p>";
+    return;
+  }
+  
+  list.innerHTML = html;
+  applyReadMark();
+  
+  
+  /* ================= LATEST UPDATE ================= */
+  const latestEl = document.getElementById("detailLatestUpdate");
+  if (latestEl) {
+    latestEl.textContent = latestDate ?
+      latestDate.toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      }) : "-";
+  }
+  
+  
+  /* ================= CACHE ================= */
+  const cacheKey = getChapterCacheKey(currentTitle);
+  
+  localStorage.setItem(cacheKey, JSON.stringify({
+    html: html,
+    latest: latestDate
+  }));
+  
+}; 
+      
+  /* =========================    
+     LOAD CHAPTERS    
+  ========================= */    
+  function loadChapters(title) {  
+  const list = document.getElementById("chapterList");  
+  const cacheKey = getChapterCacheKey(title);  
+  const cached = localStorage.getItem(cacheKey);  
+    
+  if (cached) {  
+    try {  
+      const data = JSON.parse(cached);  
+        
+      list.innerHTML = data.html;  
+      applyReadMark();  
+        
+      const latestEl = document.getElementById("detailLatestUpdate");  
+      if (latestEl && data.latest) {  
+        latestEl.textContent = new Date(data.latest).toLocaleDateString("id-ID", {  
+          day: "numeric",  
+          month: "long",  
+          year: "numeric"  
+        });  
+      }  
+        
+    } catch (e) {  
+      // fallback cache lama (HTML)  
+      list.innerHTML = cached;  
+      applyReadMark();  
+    }  
+      
+  } else {  
+    list.innerHTML = `<p style="text-align:center;padding:20px;color:#aaa;">Loading chapters...</p>`;  
+  }  
+    
+  const s = document.createElement("script");  
+  const base = getFeedBase();
+s.src = `${base}feeds/posts/default?alt=json-in-script&max-results=200&callback=chapterCallback&q=${encodeURIComponent(title)}`;  
+  document.body.appendChild(s);  
+}  
+      
+window.ratingCallback = function(data) {  
+  console.log("RATING FEED:", data);  
+  if (!data.feed || !data.feed.entry) return;  
+    
+  const entry = data.feed.entry[0];  
+  if (!entry.category) return;  
+    
+  let ratingValue = null;  
+    
+  entry.category.forEach(cat => {  
+    const label = cat.term.trim();  
+    if (/^\d+(\.\d+)?$/.test(label)) {  
+      ratingValue = parseFloat(label);  
+    }  
+  });  
+    
+  const ratingStars = document.getElementById("ratingStars");  
+  const ratingNumber = document.getElementById("ratingNumber");  
+    
+  if (ratingValue !== null) {  
+    ratingNumber.textContent = ratingValue.toFixed(1);  
+      
+    let starsHTML = "";  
+    let starScore = ratingValue / 2;  
+      
+    for (let i = 1; i <= 5; i++) {  
+      if (starScore >= i) {  
+        starsHTML += '<i class="fas fa-star"></i>';  
+      } else if (starScore >= i - 0.5) {  
+        starsHTML += '<i class="fas fa-star-half-alt"></i>';  
+      } else {  
+        starsHTML += '<i class="far fa-star"></i>';  
+      }  
+    }  
+      
+    ratingStars.innerHTML = starsHTML;  
+  }  
+};  
+      
+    function applyReadMark() {  
+  const key = "read_" + currentTitle;  
+  const read = JSON.parse(localStorage.getItem(key) || "[]");  
+    
+  document.querySelectorAll(".chapter-item").forEach(item => {  
+    const label = item.querySelector(".chapter-label")?.textContent || "";  
+      
+    // ambil nomor chapter saja  
+    const chapterNum = label.match(/(\d+(\.\d+)?)/)?.[0];  
+      
+    if (read.includes(chapterNum)) {  
+      item.classList.add("read");  
+    }  
+  });  
+}  
+      function getFeedBase() {
+  let base = localStorage.getItem("feedBlogUrl");
+  
+  if (!base) {
+    try {
+      const saved = JSON.parse(localStorage.getItem("currentManga"));
+      base = saved?.source || "";
+    } catch (e) {}
+  }
+  
+  if (!base) return "";
+  
+  if (!base.endsWith("/")) base += "/";
+  
+  return base;
+}
+  
+      
+  /* =========================    
+     BOOKMARK FIX (NO INNERHTML BUG)    
+  ========================= */    
+  function updateBookmarkUI(isSaved) {    
+    const btn = document.getElementById('bookmarkBtn');    
+    const text = document.getElementById('bookmarkText');    
+    const icon = btn.querySelector("i");    
+        
+    if (isSaved) {    
+      btn.classList.add("bookmarked");    
+      icon.className = "fas fa-check";    
+      text.textContent = "Bookmarked";    
+    } else {    
+      btn.classList.remove("bookmarked");    
+      icon.className = "fas fa-bookmark";    
+      text.textContent = "Bookmark";    
+    }    
+  }    
+      
+  function checkBookmarkStatus() {    
+    const bookmarks = JSON.parse(localStorage.getItem("mangaBookmarks") || "[]");    
+    updateBookmarkUI(bookmarks.includes(currentTitle));    
+  }    
+      
+  document.getElementById('bookmarkBtn').addEventListener('click', () => {    
+    if (!currentTitle) return;    
+        
+    let bookmarks = JSON.parse(localStorage.getItem("mangaBookmarks") || "[]");    
+    const index = bookmarks.indexOf(currentTitle);    
+        
+    if (index === -1) {    
+      bookmarks.push(currentTitle);    
+      updateBookmarkUI(true);    
+    } else {    
+      bookmarks.splice(index, 1);    
+      updateBookmarkUI(false);    
+    }    
+        
+    localStorage.setItem("mangaBookmarks", JSON.stringify(bookmarks));    
+  });    
+      
+    function markChapterRead(chapter) {  
+  const key = "read_" + currentTitle;  
+  let read = JSON.parse(localStorage.getItem(key) || "[]");  
+    
+  const chapterNum = chapter.match(/(\d+(\.\d+)?)/)?.[0];  
+    
+  if (!read.includes(chapterNum)) {  
+    read.push(chapterNum);  
+    localStorage.setItem(key, JSON.stringify(read));  
+  }  
+}  
+      
+    function openChapter(url, chapter) {  
+    
+  // tandai sudah dibaca  
+  markChapterRead(chapter);  
+    
+  const slug = (currentTitle + " " + chapter)  
+    .toLowerCase()  
+    .replace(/[^a-z0-9\s-]/g, "")  
+    .replace(/\s+/g, "-");  
+    
+  const chapterData = {  
+    url: url,  
+    chapter: chapter,  
+    title: currentTitle,  
+    slug: slug  
+  };  
+    
+  localStorage.setItem("currentChapter", JSON.stringify(chapterData));  
+    
+  window.location.href = `reader-feed.html?slug=${slug}`;  
+}  
+  
+  /* =========================    
+     INIT    
+  ========================= */    
+  window.addEventListener("DOMContentLoaded", loadDetail);    
+</script>
+
+<script src="/chapters.js"></script>
+
+<div id="site-footer"></div>
+<script src="/js/footer.js" defer></script>
