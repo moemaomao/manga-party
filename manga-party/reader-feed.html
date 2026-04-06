@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title id="readerTitle">Mikoroku Reader</title>
+
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" id="ogTitle" content="Mikoroku">
+  <meta property="og:description" id="ogDesc" content="Baca chapter manga/manhwa terbaru">
+  <meta property="og:image" id="ogImage" content="https://via.placeholder.com/1200x630/1a1a1a/ffffff?text=Mikoroku+Scan">
+  <meta property="og:url" id="ogUrl" content="">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Mikoroku Scan">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" id="twTitle" content="Mikoroku Reader">
+  <meta name="twitter:description" id="twDesc" content="Baca chapter manga/manhwa terbaru">
+  <meta name="twitter:image" id="twImage" content="https://via.placeholder.com/1200x630/1a1a1a/ffffff?text=Mikoroku+Scan">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body { 
+      margin: 0; 
+      font-family: kodchasan !important;
+      background: #0b0b0b !important;
+      color: white !important;
+      overflow-x: hidden; 
+      touch-action: manipulation;
+    }
+
+    .topbar {
+      position: sticky; 
+      top: 0; 
+      padding: 16px 15px 12px; 
+      z-index: 100;
+      text-align: center;
+      background: transparent;
+    }
+
+    #chapterTitle { 
+      font-size: 1.02em; 
+      font-weight: 500;
+      margin: 0;
+      opacity: 0.85;
+    }
+
+    #reader { 
+      max-width: 100%; 
+      margin: 0 auto; 
+    }
+
+    #reader img { 
+      width: 100%; 
+      display: block; 
+      margin-bottom: 6px; 
+      background: #111; 
+      min-height: 300px;
+    }
+
+    .loading { 
+      text-align: center; 
+      padding: 50px; 
+      color: #888; 
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      background: transparent;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      z-index: 100;
+      transition: opacity 0.4s ease;
+      opacity: 1;
+    }
+
+    .nav-btn {
+      background: rgba(255, 0, 0, 0.2);
+      color: rgba(255,255,255,0.85);
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 9px 22px; 
+      border-radius: 8px;
+      cursor: pointer; 
+      font-size: 0.92em;
+      min-width: 105px;
+      backdrop-filter: blur(6px);
+    }
+
+    .nav-btn:disabled { 
+      opacity: 0.3; 
+      cursor: not-allowed; 
+    }
+
+    /* Settings Overlay */
+    .settings-overlay {
+      position: fixed;
+      bottom: 78px;
+      right: 15px;
+      z-index: 300;
+    }
+
+    .gear-btn {
+      background: rgba(34, 34, 34, 0.85);
+      color: white;
+      border: none;
+      width: 42px;
+      height: 42px;
+      font-size: 21px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .menu-dropdown {
+      position: absolute;
+      bottom: 52px;
+      right: 0;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 12px;
+      padding: 12px 15px;
+      width: 210px;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.75);
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 310;
+      max-height: 65vh;
+      overflow-y: auto;
+    }
+
+    .menu-dropdown button, .menu-dropdown select {
+      background: darkred;
+      color: #fff;
+      border: none;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 0.87em;
+    }
+
+    .chapter-list {
+      max-height: 280px;
+      overflow-y: auto;
+      background: rgba(25, 25, 25, 0.8);
+      border-radius: 8px;
+      padding: 4px 0;
+    }
+
+    .chapter-item {
+      padding: 8px 12px;
+      font-size: 0.84em;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+
+    .chapter-item:last-child { border-bottom: none; }
+    .chapter-item:hover { background: rgba(70, 70, 70, 0.6); }
+    .chapter-item.current { background: rgba(255, 80, 80, 0.25); font-weight: 500; }
+
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.87em;
+      padding: 4px 0;
+    }
+
+    /* Page Mode */
+    /* PAGE MODE */
+.page-mode #reader {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  height: 100vh;
+}
+
+.page-mode #reader>div {
+  min-width: 100%;
+  height: 100vh;
+  scroll-snap-align: start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-mode #reader img {
+  max-width: 100%;
+  max-height: 100vh;
+  object-fit: contain;
+}
+
+.page-mode .skeleton {
+  width: 100%;
+  height: 100vh;
+}
+
+.skeleton {
+  width: 100%;
+  height: 300px;
+  background: linear-gradient(
+    90deg,
+    #111 25%,
+    #1c1c1c 37%,
+    #111 63%
+  );
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+#reader img {
+  width: 100%;
+  display: block;
+}
+
+#reader>div {
+  margin-bottom: 6px;
+}
+
+    .page-nav {
+      position: fixed; 
+      top: 50%; 
+      transform: translateY(-50%); 
+      background: transparent;
+      color: rgba(255,255,255,0.8);
+      border: none; 
+      width: 36px; 
+      height: 72px; 
+      font-size: 34px;
+      cursor: pointer; 
+      z-index: 200; 
+      display: none;
+      transition: opacity 0.3s;
+    }
+    .page-nav.left { left: 10px; }
+    .page-nav.right { right: 10px; }
+    
+    /* ================= DESKTOP WIDTH FIX ================= */
+@media (min-width: 1024px) {
+  #reader {
+    max-width: 900px;   /* lebar standar */
+    margin: 0 auto;
+  }
+
+  #reader img {
+    width: 100%;
+  }
+
+  /* page mode desktop */
+  .page-mode #reader {
+    max-width: 100%;
+  }
+
+  .page-mode #reader > div {
+    min-width: 100%;
+  }
+
+  .page-mode #reader img {
+    max-width: 900px;
+    margin: auto;
+  }
+}
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+  <script src="/js/header.js" defer></script>
+  <script src="/js/manga-data.js" defer></script>
+  
+<div class="topbar">
+  <div id="chapterTitle">Loading chapter...</div>
+</div>
+
+<div id="reader">
+  <div class="loading">Memuat gambar chapter...</div>
+</div>
+
+<div id="commentSection">
+  <h3 style="text-align:center;margin-bottom:20px;color:#ccc;">Kami butuh dana untuk mengembangkan web ini🙏</h3>
+</div>
+
+<div class="bottom-nav" id="bottomNav">
+  <button class="nav-btn" id="prevChapter">← Prev</button>
+  <button class="nav-btn" id="nextChapter">Next →</button>
+</div>
+
+<div id="emoji-reaction"></div>
+<script src="/emoji-reaction.js"></script>
+<script>
+  EmojiReaction.render(document.getElementById("emoji-reaction"));
+</script>
+
+<!-- Settings Overlay -->
+<div class="settings-overlay">
+  <button class="gear-btn" id="gearBtn">⚙️</button>
+  <div class="menu-dropdown" id="menuDropdown">
+    <button id="modeBtn">Mode: Webtoon</button>
+    <select id="pageSelect"></select>
+
+    <button id="chapterListBtn">Daftar Chapter</button>
+    
+    <div id="chapterListContainer" class="chapter-list" style="display:none;">
+      <!-- Diisi oleh JavaScript -->
+    </div>
+
+    <div class="toggle-label">
+      <span>Data Saver</span>
+      <input type="checkbox" id="dataSaverToggle">
+    </div>
+  </div>
+</div>
+
+<button class="page-nav left" id="pagePrev">‹</button>
+<button class="page-nav right" id="pageNext">›</button>
+
+<script>
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+// ====================== DATA ======================
+const params = new URLSearchParams(window.location.search);
+const slugParam = params.get("slug");
+
+let currentData = JSON.parse(localStorage.getItem("currentChapter") || "{}");
+
+const urlChapter = params.get("url");
+
+if (urlChapter) {
+  currentData = { ...currentData, url: decodeURIComponent(urlChapter) };
+  localStorage.setItem("currentChapter", JSON.stringify(currentData));
+}
+
+if (!currentData.url) {
+  document.body.innerHTML = "<h2 style='text-align:center;padding:50px;color:red;'>Chapter tidak ditemukan</h2>";
+  throw new Error("No current chapter data");
+}
+
+const seriesTitle = currentData.title || "";
+
+let allChapters = [];
+let currentIndex = -1;
+let images = [];
+let currentMode = localStorage.getItem("readerMode") || "webtoon";
+let dataSaver = localStorage.getItem("dataSaver") === "true";
+let currentPageIndex = 0;
+
+function optimizeImage(url) {
+  if (!dataSaver) return url;
+  
+  // Blogger (kompres + resize)
+  if (url.includes("blogger.googleusercontent")) {
+    return url.replace(/\/s\d+(-c)?/, "/s600") + "-rw";
+  }
+  
+  // ImgBB
+  if (url.includes("i.ibb.co")) {
+    return url + "?w=600&q=60";
+  }
+  
+  // Imgur
+  if (url.includes("imgur.com")) {
+    return url.replace(/(\.jpg|\.png)/, "m$1");
+  }
+  // Postimages
+if (url.includes("postimg.cc") || url.includes("postimg")) {
+  return url + "?w=600";
+}
+
+// Discord CDN
+if (url.includes("cdn.discordapp.com")) {
+  return url + "?width=600&quality=60";
+}
+
+// Telegraph
+if (url.includes("telegra.ph")) {
+  return url;
+}
+
+// Catbox
+if (url.includes("files.catbox.moe")) {
+  return url;
+}
+  return url;
+}
+
+
+
+// ====================== INITIAL OPEN GRAPH (PENTING UNTUK SHARE) ======================
+function setInitialOpenGraph() {
+  const tempTitle = currentData.chapter || seriesTitle || "Mikoroku Reader";
+  const placeholder = "https://via.placeholder.com/1200x630/1a1a1a/ffffff?text=Mikoroku+Scan";
+
+  document.getElementById("ogTitle").content = tempTitle;
+  document.getElementById("ogDesc").content = `${tempTitle} - ${seriesTitle}`;
+  document.getElementById("ogImage").content = placeholder;
+  document.getElementById("ogUrl").content = window.location.href;
+
+  document.getElementById("twTitle").content = tempTitle;
+  document.getElementById("twDesc").content = `${tempTitle} - ${seriesTitle}`;
+  document.getElementById("twImage").content = placeholder;
+
+  document.title = tempTitle;
+  document.getElementById("readerTitle").textContent = tempTitle;
+}
+
+setInitialOpenGraph();
+
+// ====================== SORTING (Chapter terbaru di atas) ======================
+function naturalSort(a, b) {
+  return a.title.$t.localeCompare(b.title.$t, undefined, { numeric: true, sensitivity: 'base' });
+}
+
+// Update OG setelah data siap
+function updateOpenGraph() {
+  if (!allChapters[currentIndex]) return;
+  
+  const chapterTitle = allChapters[currentIndex].title.$t;
+  const firstImage = images.length > 0 ? images[0] : 
+    "https://via.placeholder.com/1200x630/1a1a1a/ffffff?text=Mikoroku+Scan";
+  
+  document.getElementById("ogTitle").content = chapterTitle;
+  document.getElementById("ogDesc").content = `${chapterTitle} - ${seriesTitle}`;
+  document.getElementById("ogImage").content = firstImage;
+  document.getElementById("ogUrl").content = window.location.href;
+
+  document.getElementById("twTitle").content = chapterTitle;
+  document.getElementById("twDesc").content = `${chapterTitle} - ${seriesTitle}`;
+  document.getElementById("twImage").content = firstImage;
+
+  document.title = chapterTitle;
+  document.getElementById("readerTitle").textContent = chapterTitle;
+  document.getElementById("chapterTitle").textContent = chapterTitle;
+}
+
+ function markChapterReadReader(chapterTitle) {
+  if (!seriesTitle) return;
+  
+  const key = "read_" + seriesTitle;
+  let read = JSON.parse(localStorage.getItem(key) || "[]");
+  
+  const chapterNum = chapterTitle.match(/(\d+(\.\d+)?)/)?.[0];
+  
+  if (!read.includes(chapterNum)) {
+    read.push(chapterNum);
+    localStorage.setItem(key, JSON.stringify(read));
+  }
+}
+
+// ====================== LOAD FEED ======================
+function getFeedBase() {
+  let base = localStorage.getItem("feedBlogUrl");
+  
+  if (!base) {
+    try {
+      const saved = JSON.parse(localStorage.getItem("currentManga"));
+      base = saved?.source || "";
+    } catch (e) {}
+  }
+  
+  if (!base) return "";
+  
+  if (!base.endsWith("/")) base += "/";
+  return base;
+}
+
+const feedBase = getFeedBase();
+
+const script = document.createElement("script");
+script.src = `${feedBase}feeds/posts/default?alt=json-in-script&max-results=200&q=${encodeURIComponent(seriesTitle)}&callback=readerCallback`;
+document.body.appendChild(script);
+
+  // Chapter terbaru di paling atas
+  window.readerCallback = function(feed) {
+  if (!feed.feed || !feed.feed.entry) return;
+  
+  allChapters = feed.feed.entry.filter(entry => {
+    const title = (entry.title && entry.title.$t) ? entry.title.$t.toLowerCase() : "";
+    return title.includes("chapter") &&
+      (seriesTitle === "" || title.includes(seriesTitle.toLowerCase()));
+  });
+  
+  // Chapter terbaru di paling atas
+  allChapters.sort((a, b) => naturalSort(b, a));
+  
+  currentIndex = allChapters.findIndex(entry => {
+    const slug = entry.title.$t
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-");
+    return slug === slugParam;
+  });
+  
+  if (currentIndex === -1 && currentData.url) {
+    currentIndex = allChapters.findIndex(entry =>
+      entry.link.some(l => l.href === currentData.url)
+    );
+  }
+  
+  if (currentIndex === -1) {
+    console.warn("Chapter tidak ditemukan di list");
+    return;
+  }
+  
+  const currentChapterTitle = allChapters[currentIndex].title.$t;
+
+document.getElementById("chapterTitle").textContent = currentChapterTitle;
+
+// tandai sudah dibaca
+markChapterReadReader(currentChapterTitle);
+  
+  updateURL(allChapters[currentIndex]);
+  extractImages(allChapters[currentIndex]);
+  buildChapterList();
+  updateOpenGraph();
+};
+
+function extractImages(entry) {
+  let imgList = [];
+  if (entry.content && entry.content.$t) {
+    const matches = [...entry.content.$t.matchAll(/<img.*?src=["'](.*?)["']/g)];
+    imgList = matches.map(m => m[1]);
+  }
+  
+  images = imgList;
+  if (!images.length) return;
+  
+  renderImages();
+  
+  // paksa ke atas (double safety)
+  requestAnimationFrame(() => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  });
+  
+  currentPageIndex = 0;
+  
+  updateNavButtons();
+  preloadNextChapter();
+  applyCurrentMode();
+}
+
+function renderImages() {
+  const container = document.getElementById("reader");
+  container.innerHTML = "";
+  
+  images.forEach((src, index) => {
+    
+    const wrapper = document.createElement("div");
+    
+    const skeleton = document.createElement("div");
+    skeleton.className = "skeleton";
+    
+    const img = document.createElement("img");
+    img.src = optimizeImage(src);
+    img.alt = `Page ${index + 1}`;
+    img.style.display = "none";
+    
+    img.onload = () => {
+      skeleton.remove();
+      img.style.display = "block";
+    };
+    
+    img.onerror = () => {
+      skeleton.style.background = "#300";
+    };
+    
+    wrapper.appendChild(skeleton);
+    wrapper.appendChild(img);
+    container.appendChild(wrapper);
+    
+  });
+}
+
+
+
+function buildChapterList() {
+  const container = document.getElementById("chapterListContainer");
+  container.innerHTML = "";
+  
+  const key = "read_" + seriesTitle;
+  const read = JSON.parse(localStorage.getItem(key) || "[]");
+  
+  allChapters.forEach((ch, i) => {
+    const div = document.createElement("div");
+    div.className = "chapter-item";
+    
+    if (i === currentIndex) div.classList.add("current");
+    
+    // ===== TAMBAH INI =====
+    if (read.includes(ch.title.$t)) {
+      div.classList.add("read");
+    }
+    // ======================
+    
+    div.textContent = ch.title.$t;
+    
+    div.onclick = () => {
+      const newData = {
+        url: ch.link[0].href,
+        chapter: ch.title.$t,
+        title: seriesTitle
+      };
+      localStorage.setItem("currentChapter", JSON.stringify(newData));
+      localStorage.setItem("readerMode", currentMode);
+      updateURL(ch.link[0].href);
+      location.reload();
+    };
+    
+    container.appendChild(div);
+  });
+}
+
+function applyCurrentMode() {
+  document.body.classList.toggle("page-mode", currentMode === "page");
+  document.getElementById("modeBtn").textContent = `Mode: ${currentMode === "webtoon" ? "Webtoon" : "Page"}`;
+
+  const isPage = currentMode === "page";
+  document.getElementById("pagePrev").style.display = isPage ? "block" : "none";
+  document.getElementById("pageNext").style.display = isPage ? "block" : "none";
+
+  updatePageSelect();
+
+  if (isPage && images.length > 0) {
+    setTimeout(() => goToPage(0), 100);
+  }
+}
+
+function updatePageSelect() {
+  const select = document.getElementById("pageSelect");
+  select.innerHTML = "";
+  images.forEach((_, i) => {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = `Page ${i + 1} / ${images.length}`;
+    select.appendChild(opt);
+  });
+  select.value = currentMode === "page" ? currentPageIndex : 0;
+}
+
+function updateNavButtons() {
+  document.getElementById("prevChapter").disabled =
+    currentIndex >= allChapters.length - 1;
+  
+  document.getElementById("nextChapter").disabled =
+    currentIndex <= 0;
+}
+
+function loadChapterByIndex(newIndex) {
+  if (newIndex < 0 || newIndex >= allChapters.length) return;
+ 
+  localStorage.removeItem(`scrollPos_${currentData.url}`);
+  
+  const newEntry = allChapters[newIndex];
+  
+  markChapterReadReader(newEntry.title.$t);
+  
+  const newData = {
+    url: newEntry.link[0].href,
+    chapter: newEntry.title.$t,
+    title: seriesTitle
+  };
+  
+  localStorage.setItem("currentChapter", JSON.stringify(newData));
+  localStorage.setItem("readerMode", currentMode);
+  updateURL(newEntry.link[0].href);
+  location.reload();
+}
+
+// ====================== EVENT LISTENERS ======================
+document.getElementById("prevChapter")
+  .addEventListener("click", () => loadChapterByIndex(currentIndex + 1));
+
+document.getElementById("nextChapter")
+  .addEventListener("click", () => loadChapterByIndex(currentIndex - 1));
+
+const gearBtn = document.getElementById("gearBtn");
+const menuDropdown = document.getElementById("menuDropdown");
+const modeBtn = document.getElementById("modeBtn");
+const pageSelect = document.getElementById("pageSelect");
+const chapterListBtn = document.getElementById("chapterListBtn");
+const chapterListContainer = document.getElementById("chapterListContainer");
+const dataSaverToggle = document.getElementById("dataSaverToggle");
+
+dataSaverToggle.checked = dataSaver;
+
+gearBtn.addEventListener("click", () => {
+  menuDropdown.style.display = menuDropdown.style.display === "flex" ? "none" : "flex";
+  chapterListContainer.style.display = "none";
+});
+
+document.addEventListener("click", function(e) {
+  const isClickInsideMenu = menuDropdown.contains(e.target);
+  const isClickGear = gearBtn.contains(e.target);
+  
+  if (!isClickInsideMenu && !isClickGear) {
+    menuDropdown.style.display = "none";
+    chapterListContainer.style.display = "none";
+  }
+});
+
+modeBtn.addEventListener("click", () => {
+  currentMode = currentMode === "webtoon" ? "page" : "webtoon";
+  localStorage.setItem("readerMode", currentMode);
+  applyCurrentMode();
+  menuDropdown.style.display = "none";
+});
+
+pageSelect.addEventListener("change", () => {
+  const targetIndex = parseInt(pageSelect.value);
+  if (currentMode === "page") {
+    goToPage(targetIndex);
+  } else {
+    const imgs = document.querySelectorAll("#reader img");
+    if (imgs[targetIndex]) imgs[targetIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+  menuDropdown.style.display = "none";
+});
+
+chapterListBtn.addEventListener("click", () => {
+  chapterListContainer.style.display = chapterListContainer.style.display === "block" ? "none" : "block";
+});
+
+dataSaverToggle.addEventListener("change", () => {
+  dataSaver = dataSaverToggle.checked;
+  localStorage.setItem("dataSaver", dataSaver);
+  
+  // Render ulang gambar dengan data saver baru
+  renderImages();
+  
+  // Reset scroll/page index
+  currentPageIndex = 0;
+  if (currentMode === "page") {
+    goToPage(0);
+  } else {
+    window.scrollTo(0, 0);
+  }
+  
+  menuDropdown.style.display = "none";
+});
+
+function updateURL(entry) {
+  let slug;
+  
+  if (typeof entry === "string") {
+    // jika dikirim URL
+    const found = allChapters.find(e =>
+      e.link.some(l => l.href === entry)
+    );
+    
+    if (!found) return;
+    
+    slug = found.title.$t
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-");
+    
+  } else {
+    // jika dikirim entry langsung
+    slug = entry.title.$t
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-");
+  }
+  
+  const newUrl = new URL(window.location.href);
+  newUrl.searchParams.set("slug", slug);
+  window.history.replaceState(null, "", newUrl);
+}
+
+// Page Navigation
+function goToPage(index) {
+  if (index < 0 || index >= images.length) return;
+  currentPageIndex = index;
+
+  const imgs = document.querySelectorAll("#reader img");
+  if (imgs[index]) {
+    imgs[index].scrollIntoView({ behavior: "smooth", inline: "center", block: "center" });
+  }
+  pageSelect.value = index;
+}
+
+document.getElementById("pagePrev").addEventListener("click", () => goToPage(currentPageIndex - 1));
+document.getElementById("pageNext").addEventListener("click", () => goToPage(currentPageIndex + 1));
+
+function handleScroll() {
+  const bottomNav = document.getElementById("bottomNav");
+  const commentSection = document.getElementById("commentSection");
+  const commentRect = commentSection.getBoundingClientRect();
+  const isCommentVisible = commentRect.top < window.innerHeight * 0.9 && commentRect.bottom > 100;
+
+  bottomNav.style.opacity = isCommentVisible ? "0" : "1";
+  bottomNav.style.pointerEvents = isCommentVisible ? "none" : "auto";
+
+  if (currentMode === "webtoon") {
+    const imgs = document.querySelectorAll("#reader img");
+    for (let i = imgs.length - 1; i >= 0; i--) {
+      const rect = imgs[i].getBoundingClientRect();
+      if (rect.top <= window.innerHeight / 2) {
+        pageSelect.value = i;
+        break;
+      }
+    }
+  }
+}
+
+window.addEventListener("scroll", handleScroll);
+
+function restoreScrollPosition() {
+  const saved = localStorage.getItem(`scrollPos_${currentData.url}`);
+  if (saved) setTimeout(() => window.scrollTo(0, parseInt(saved)), 150);
+}
+
+function preloadNextChapter() {
+  if (currentIndex >= allChapters.length - 1) return;
+  const nextEntry = allChapters[currentIndex + 1];
+  const matches = [...(nextEntry.content?.$t || "").matchAll(/<img.*?src=["'](.*?)["']/g)];
+  matches.map(m => m[1]).slice(0, 5).forEach(src => {
+    const img = new Image();
+    img.src = src;
+  });
+}
+
+document.addEventListener("keydown", e => {
+  if (currentMode === "page") {
+    if (e.key === "ArrowRight") goToPage(currentPageIndex + 1);
+    if (e.key === "ArrowLeft")  goToPage(currentPageIndex - 1);
+  }
+});
+
+window.addEventListener("beforeunload", () => {
+  localStorage.setItem(`scrollPos_${currentData.url}`, window.scrollY);
+});
+</script>
+
+</body>
+</html>
