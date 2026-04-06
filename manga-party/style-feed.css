@@ -221,24 +221,6 @@ body {
   border: 1px solid rgba(255, 255, 255, .08);
 }
 
-/* ================= DARK MODE FIX - MANGA PARTY ================= */
-
-.dark .tool-title h1,
-.dark .tool-sub,
-.dark .tool-help,
-.dark .about-btn,
-.dark .url-box input {
-  color: #fff;
-}
-
-.dark .tool-help {
-  color: #ddd;
-}
-
-.dark .url-box input::placeholder {
-  color: #aaa;
-}
-
 /* ABOUT BUTTON */
 .url-top {
   display: flex;
